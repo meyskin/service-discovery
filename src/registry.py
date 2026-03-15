@@ -4,13 +4,10 @@ Services register on startup and deregister on shutdown.
 Clients query here to discover available instances.
 """
 
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
-
 import time
 import threading
 from flask import Flask, request, jsonify
-from common.log import get_logger
+from log import get_logger
 
 app = Flask(__name__)
 log = get_logger("REGISTRY")

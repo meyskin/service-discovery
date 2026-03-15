@@ -4,15 +4,14 @@ then calls it. Demonstrates client-side service discovery with random
 load balancing across available instances.
 """
 
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
-
+import os
 import random
 import requests
-from common.log import get_logger
+from log import get_logger
 
 REGISTRY_URL = os.environ.get("REGISTRY_URL", "http://localhost:8000")
 SERVICE_NAME = os.environ.get("SERVICE_NAME", "order-service")
+LOCAL_MODE   = os.environ.get("LOCAL_MODE", "1") == "1"  # rewrite hosts to localhost
 CALLS        = 6   # number of requests to make
 
 log = get_logger("CLIENT")
@@ -43,6 +42,12 @@ def main():
     instances = discover(SERVICE_NAME)
     log.info("Found %d instance(s): %s",
              len(instances), ", ".join(i["id"] for i in instances))
+
+    # When running locally, rewrite Docker hostnames to localhost
+    if LOCAL_MODE:
+        for inst in instances:
+            inst["host"] = "localhost"
+        log.info("Local mode: rewriting hosts to localhost")
 
     # Step 2 – Call random instances (client-side load balancing)
     log.info("Making %d calls (random instance selection)...", CALLS)

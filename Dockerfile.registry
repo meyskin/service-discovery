@@ -1,6 +1,5 @@
 FROM python:3.11-slim
 WORKDIR /app
 RUN pip install flask
-COPY common/ common/
-COPY registry/registry.py registry/registry.py
-CMD ["python", "registry/registry.py"]
+COPY src/ ./
+CMD ["python", "registry.py"]

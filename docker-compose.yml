@@ -50,18 +50,6 @@ services:
     networks:
       - discovery-net
 
-  client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
-    environment:
-      - REGISTRY_URL=http://registry:8000
-    depends_on:
-      - order-service-1
-      - order-service-2
-    networks:
-      - discovery-net
-
 networks:
   discovery-net:
     driver: bridge

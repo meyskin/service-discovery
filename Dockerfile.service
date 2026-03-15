@@ -1,6 +1,5 @@
 FROM python:3.11-slim
 WORKDIR /app
 RUN pip install flask requests
-COPY common/ common/
-COPY service/service.py service/service.py
-CMD ["python", "service/service.py"]
+COPY src/ ./
+CMD ["python", "service.py"]

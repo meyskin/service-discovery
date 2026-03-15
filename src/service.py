@@ -5,15 +5,14 @@ Sends periodic heartbeats to stay alive in the registry.
 On shutdown it deregisters cleanly.
 """
 
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/..")
-
+import sys
+import os
 import time
 import signal
 import threading
 import requests
 from flask import Flask, jsonify
-from common.log import get_logger
+from log import get_logger
 
 app = Flask(__name__)
 

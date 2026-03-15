@@ -4,14 +4,30 @@ A minimal client-side service discovery implementation built with Python + Flask
 
 ## Architecture
 
-![Architecture Diagram](architecture_diagram.png)
+```mermaid
+graph TD
+    subgraph Services
+        S1["order-service-1<br/><small>service.py :8001</small>"]
+        S2["order-service-2<br/><small>service.py :8002</small>"]
+    end
+
+    R["Service Registry<br/><small>registry.py :8000</small>"]
+    C["Client<br/><small>client.py</small>"]
+
+    S1 -- "① register / heartbeat" --> R
+    S2 -- "① register / heartbeat" --> R
+    C -- "② discover" --> R
+    R -. "instances" .-> C
+    C -- "③ call random instance" --> S1
+    C -- "③ call random instance" --> S2
+```
 
 | Component | File | Port |
 |---|---|---|
-| Service Registry | `registry/registry.py` | 8000 |
-| Order Service (instance 1) | `service/service.py` | 8001 |
-| Order Service (instance 2) | `service/service.py` | 8002 |
-| Discovery Client | `client/client.py` | — |
+| Service Registry | `src/registry.py` | 8000 |
+| Order Service (instance 1) | `src/service.py` | 8001 |
+| Order Service (instance 2) | `src/service.py` | 8002 |
+| Discovery Client | `src/client.py` | — |
 
 ### Flow
 1. **Register** — each service instance POSTs to `/register` on startup
