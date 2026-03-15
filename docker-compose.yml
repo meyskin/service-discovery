@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+
+  registry:
+    build:
+      context: .
+      dockerfile: Dockerfile.registry
+    ports:
+      - "8000:8000"
+    networks:
+      - discovery-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/services')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  order-service-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+    environment:
+      - PORT=8001
+      - HOST=order-service-1
+      - SERVICE_NAME=order-service
+      - REGISTRY_URL=http://registry:8000
+    ports:
+      - "8001:8001"
+    depends_on:
+      registry:
+        condition: service_healthy
+    networks:
+      - discovery-net
+
+  order-service-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+    environment:
+      - PORT=8002
+      - HOST=order-service-2
+      - SERVICE_NAME=order-service
+      - REGISTRY_URL=http://registry:8000
+    ports:
+      - "8002:8002"
+    depends_on:
+      registry:
+        condition: service_healthy
+    networks:
+      - discovery-net
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    environment:
+      - REGISTRY_URL=http://registry:8000
+    depends_on:
+      - order-service-1
+      - order-service-2
+    networks:
+      - discovery-net
+
+networks:
+  discovery-net:
+    driver: bridge
